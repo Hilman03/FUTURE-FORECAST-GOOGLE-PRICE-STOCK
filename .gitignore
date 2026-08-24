@@ -1,0 +1,16 @@
+# R session and user-specific state
+.RData
+.Rhistory
+.Ruserdata
+.Rproj.user/
+
+# Generated outputs
+plots/
+output/
+*.Rout
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
