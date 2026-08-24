@@ -1,56 +1,62 @@
 # Google Stock Price Forecasting with Time-Series Models
 
+A time-series forecasting project using **R** to analyse and forecast Alphabet Inc. Class A (GOOGL) daily closing prices with smoothing methods and ARIMA models.
+
 ![Comparison of Holt's Method and Auto ARIMA](docs/model-comparison.png)
 
-This academic time-series project analyzes and forecasts the daily closing price of Alphabet Inc. Class A stock (GOOGL). It compares exponential-smoothing techniques with Box-Jenkins ARIMA models using a chronological 70/30 estimation and hold-out design.
+## At a Glance
 
-The analysis covers 2,775 trading-day observations from 2 January 2013 to 10 January 2024. The final model choice is based on forecasting accuracy, residual diagnostics, simplicity, and parsimony.
+| Area | Details |
+|---|---|
+| Project Type | Time-Series Analysis / Forecasting |
+| Language | R |
+| Dataset | Alphabet Inc. Class A daily stock data |
+| Observations | 2,775 trading days |
+| Date Range | 2 Jan 2013 – 10 Jan 2024 |
+| Validation | Chronological 70/30 estimation and hold-out split |
+| Best Final Model | Holt's Method |
+| Hold-out MAPE | **~1.45%** |
 
-> This project is an educational forecasting study, not financial advice. Forecasts based on historical prices are uncertain and should not be treated as guaranteed future values.
+> Educational forecasting study only. This project is not financial advice.
 
-## Research objectives
+## Objective
 
-- Examine the trend, cyclical behavior, seasonality, and irregular movement of Google daily closing prices.
-- Compare univariate smoothing and ARIMA forecasting approaches.
-- Select an appropriate model and produce an evidence-based one-step-ahead forecast.
+The project compares classical time-series forecasting approaches to determine which model provides the best balance of accuracy, simplicity and residual behaviour for one-step-ahead prediction.
 
-## Dataset
+The analysis covers:
 
-| Item | Value |
-| --- | --- |
-| Security | Alphabet Inc. Class A (GOOGL) |
-| Frequency | Daily trading observations |
-| Date range | 2 January 2013 - 10 January 2024 |
-| Observations | 2,775 |
-| Variables | Date, Open, High, Low, Close, Volume |
-| Missing values | None |
-| Duplicate rows | None |
-| Estimation sample | 1,942 observations (70%) |
-| Hold-out sample | 833 observations (30%) |
+- trend and time-series behaviour;
+- stationarity testing;
+- chronological hold-out evaluation;
+- exponential-smoothing methods;
+- ARIMA model comparison;
+- residual diagnostics; and
+- one-step-ahead forecasting.
 
-## Analysis workflow
+## Workflow
 
 ```mermaid
 flowchart TD
-    A[Daily GOOGL data] --> B[Exploratory analysis]
-    B --> C[Stationarity tests]
-    C --> D[Chronological 70/30 split]
-    D --> E[SES, Holt and ARRES]
-    D --> F[Candidate ARIMA models]
-    E --> G[Hold-out comparison]
+    A[GOOGL Daily Price Data] --> B[Exploratory Analysis]
+    B --> C[Stationarity Tests]
+    C --> D[70/30 Chronological Split]
+    D --> E[SES / Holt / ARRES]
+    D --> F[Candidate ARIMA Models]
+    E --> G[Hold-out Evaluation]
     F --> G
-    G --> H[One-step-ahead forecast]
+    G --> H[Model Selection]
+    H --> I[One-step Forecast]
 ```
 
-## Models evaluated
+## Models Evaluated
 
-### Univariate smoothing
+### Exponential Smoothing
 
 - Single Exponential Smoothing (SES)
 - Holt's Method
 - Adaptive Response Rate Exponential Smoothing (ARRES)
 
-### ARIMA candidates
+### ARIMA Candidates
 
 - ARIMA(1,1,0)
 - ARIMA(0,1,1)
@@ -58,42 +64,25 @@ flowchart TD
 - ARIMA(2,1,2)
 - Auto ARIMA(3,1,2)
 
-## Key findings
+## Key Results
 
-### Stationarity
-
-The level series showed a strong upward trend and a slowly decaying autocorrelation function. Although the level ADF and PP tests rejected a unit root, the KPSS test strongly rejected stationarity. First-order differencing removed the trend, after which ADF, PP, and KPSS agreed that the transformed series was stationary. Therefore, the ARIMA models used `d = 1`.
-
-### Univariate hold-out performance
-
-| Model | Hold-out MSE | Hold-out MAPE | One-step forecast |
-| --- | ---: | ---: | ---: |
+| Model | Hold-out MSE | Hold-out MAPE | One-step Forecast |
+|---|---:|---:|---:|
 | SES | 5.1038 | 1.4536% | USD 143.62 |
 | **Holt's Method** | **5.0963** | **1.4497%** | **USD 143.67** |
 | ARRES | 7.4382 | 1.7953% | USD 141.37 |
 
-Holt's Method achieved the lowest hold-out error. Its high level-smoothing parameter (`alpha = 0.8787`) placed substantial weight on the most recent closing price, which matched the near-random-walk behavior observed in the series.
+Holt's Method produced the lowest hold-out error and was selected as the final forecasting model.
 
-### ARIMA findings
+Auto ARIMA selected **ARIMA(3,1,2)** with the lowest information criteria among the tested ARIMA candidates. However, residual diagnostics showed remaining autocorrelation, so Holt's Method provided a better final balance of forecasting accuracy, simplicity and parsimony.
 
-Auto ARIMA selected ARIMA(3,1,2), which recorded the lowest information criteria among the five ARIMA candidates:
+## Stationarity & Diagnostics
 
-| Metric | ARIMA(3,1,2) |
-| --- | ---: |
-| AIC | 4483.72 |
-| AICc | 4483.76 |
-| BIC | 4517.14 |
-| Approximate hold-out MSE | 5.1984 |
-| Hold-out MAPE | 1.4700% |
-| One-step forecast | USD 143.85 |
+The original series displayed strong trend behaviour. First-order differencing was used before fitting ARIMA models, after which the transformed series showed improved stationarity behaviour.
 
-All tested ARIMA candidates failed the Ljung-Box residual white-noise test at 44 lags. ARIMA(3,1,2) had the strongest diagnostic result among them, but its remaining residual autocorrelation is an important limitation.
+Residual diagnostics, including Ljung-Box testing, were used to evaluate whether model residuals behaved like white noise.
 
-### Final selection
-
-Holt's Method was selected as the final forecasting model because it provided the best combination of hold-out accuracy, simplicity, and parsimony. Its one-step-ahead forecast was **USD 143.67**, compared with the latest observed close of USD 143.80.
-
-## Repository structure
+## Repository Structure
 
 ```text
 .
@@ -110,34 +99,40 @@ Holt's Method was selected as the final forecasting model because it provided th
 └── README.md
 ```
 
-## Reproduce the analysis
+## Reproduce the Analysis
 
-### Requirements
-
-- R 4.x
-- RStudio (optional)
-- R packages: `fpp2`, `forecast`, `tseries`, `fable`, `tsibble`, and `dplyr`
-
-Install the packages once:
+Install the required R packages:
 
 ```r
 install.packages(c("fpp2", "forecast", "tseries", "fable", "tsibble", "dplyr"))
 ```
 
-Run the scripts from the repository root so that the relative dataset path resolves correctly:
+Run the scripts:
 
 ```bash
 Rscript scripts/Univariate_model_google.R
 Rscript scripts/Arima_Model_Google.R
 ```
 
-The scripts print model summaries and accuracy measures to the console and generate diagnostic and forecast plots in the active R graphics device. The exhaustive `auto.arima()` search may take additional time.
+## Skills Demonstrated
 
-## Full report
+- R programming
+- Time-series analysis
+- Forecasting
+- Stationarity testing
+- ARIMA modelling
+- Exponential smoothing
+- Hold-out validation
+- Residual diagnostics
+- Model comparison and selection
 
-[Read the complete STA572 assignment report](report/STA%20GROUP%20ASSIGMENT%203.pdf).
+## Full Report
 
-## Project team
+See the complete academic report in:
+
+`report/STA GROUP ASSIGMENT 3.pdf`
+
+## Project Team
 
 - Muhammad Syakirin bin Shamsunrizan
 - Muhammad Nurhilman bin Mohd Rozalee
@@ -145,4 +140,4 @@ The scripts print model summaries and accuracy measures to the console and gener
 - Muhammad Kamil Aqili bin Abdul Rahman
 - Muhammad Aliff bin Ab Rahim
 
-Course: STA572 - Time Series Analysis and Forecasting, Universiti Teknologi MARA (UiTM), March-July 2026.
+Course: STA572 – Time Series Analysis and Forecasting, Universiti Teknologi MARA (UiTM)
